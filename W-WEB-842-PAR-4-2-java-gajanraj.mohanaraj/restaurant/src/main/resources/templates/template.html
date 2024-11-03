@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${name}">Nom du Restaurant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: url([[${photoBase64}]]) no-repeat center center;
+            background-size: cover;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: [[${colorTitle}]];
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        header h1 {
+            font-size: 4em;
+            margin: 0;
+        }
+        nav {
+            background-color: [[${colorButton}]];
+            padding: 15px;
+            text-align: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .content {
+            padding: 20px;
+        }
+        .section {
+            padding: 50px 0;
+        }
+        .section h2 {
+            text-align: center;
+            font-size: 2.5em;
+            color: [[${colorTitle}]];
+            margin-bottom: 20px;
+        }
+        .section p {
+            max-width: 800px;
+            margin: 0 auto 40px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .menu-items, .plats-items {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .menu-item, .plats-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin: 15px;
+            padding: 20px;
+            max-width: 300px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .menu-item h3, .plats-item h3 {
+            margin: 0;
+            font-size: 1.5em;
+            color: [[${colorTitle}]];
+        }
+        .menu-item p, .plats-item p {
+            color: #555;
+        }
+        .menu-item .price, .plats-item .price {
+            font-weight: bold;
+            color: [[${colorButton}]];
+        }
+
+        .plats-item img {
+            background: url([[${photoBase64Plats}]]) no-repeat center center;
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+     
+        .btn {
+            display: inline-block;
+            background-color: [[${colorButton}]];
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            margin: 0 auto;
+            display: block;
+            max-width: 200px;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 th:text="${name}">Nom du Restaurant</h1>
+    </header>
+ 
+    <nav>
+        <a href="#accueil" th:text="'Accueil'">Accueil</a>
+        <a href="#menu" th:text="'Menu'">Menu</a>
+        <a href="#contact" th:text="'Contact'">Contact</a>
+        <a th:href="@{/config/admin/{token}(token=${token})}" th:text="'Admin'">Admin</a>
+    </nav>
+
+    <div class="content">
+        <section class="section" id="card" th:if="${card == 1}">
+            <h2>Nos Cartes</h2>
+            <p>Explorez notre délicieux menu, préparé avec des ingrédients frais et locaux.</p>
+            <div class="menu-items">
+                <div th:each="card : ${cardList}" class="menu-item">
+                    <h3>Entrée</h3>
+                    <p th:text="${card.entree}">Entrée</p>
+                    <h3>Plats</h3>
+                    <p th:text="${card.plats}">Plats</p>
+                    <h3>Desserts</h3>
+                    <p th:text="${card.desserts}">Desserts</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="menu" th:if="${menu == 1}">
+            <h2>Nos Menus</h2>
+            <p>Explorez notre délicieux menu, préparé avec des ingrédients frais et locaux.</p>
+            <div class="menu-items">
+                <div th:each="menu : ${menuList}" class="menu-item">
+                    <h3 th:text="${menu.nameMenu}">Menu</h3>
+                    <p th:text="${menu.entree}">Entrée</p>
+                    <h3>Plats</h3>
+                    <p th:text="${menu.plats}">Plats</p>
+                    <h3>Desserts</h3>
+                    <p th:text="${menu.desserts}">Desserts</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="plats" th:if="${plats == 1}">
+            <h2>Nos plats</h2>
+            <p>Explorez notre délicieux plat, préparé avec des ingrédients frais et locaux.</p>
+            <div class="plats-items">
+                <div th:each="plat : ${platsList}" class="plats-item">
+                    <img src="[[${photoBase64Plats}]]" alt="photo">
+
+                    <h3 th:text="${plat.nom}">Nom du Plat</h3>
+                    <p th:text="${plat.description}">Description</p>
+                    <p class="price" th:text="${plat.prix} + ' €'">Prix</p>
+                    <p th:text="${plat.allergenes}">Allergènes</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="contact">
+            <h2 th:text="'Contactez-nous'">Contactez-nous</h2>
+            <p>Pour toute question ou réservation, n'hésitez pas à nous contacter.</p>
+            <form>
+                <div>
+                    <label for="name">Nom:</label>
+                    <input type="text" id="name" name="name">
+                </div>
+                <div>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email">
+                </div>
+                <div>
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message"></textarea>
+                </div>
+                <button type="submit" class="btn" th:text="'Envoyer'">Envoyer</button>
+            </form>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Nom du Restaurant. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>

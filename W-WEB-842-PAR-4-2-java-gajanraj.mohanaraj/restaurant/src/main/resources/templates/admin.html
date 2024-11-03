@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de la configuration du restaurant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        form div {
+            margin-bottom: 15px;
+        }
+
+        form label {
+            font-weight: bold;
+        }
+
+        form input,
+        form select,
+        form textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        form button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .config-list {
+            margin-top: 20px;
+        }
+
+        .config-item {
+            background: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Gestion de la configuration du restaurant</h1>
+
+        <form th:action="@{/config/modifyConfig/{token}(token=${token})}" method="post" enctype="multipart/form-data">
+            <div>
+                <label for="photo">Photo</label>
+                <input type="file" id="photo" name="photo" accept="image/*" th:value="${photoBase64}" required>
+            </div>
+            <div>
+                <label for="name">Nom du restaurant:</label>
+                <input type="text" id="name" name="name" th:value="${name}" required>
+            </div>
+            <div>
+                <label for="url">URL du site:</label>
+                <input type="text" id="url" name="url" th:value="${url}" required>
+            </div>
+            <div>
+                <label for="colorTitle">Couleur des titres:</label>
+                <input type="color" id="colorTitle" name="colorTitle" th:value="${colorTitle}" required>
+            </div>
+            <div>
+                <label for="colorButton">Couleur des boutons:</label>
+                <input type="color" id="colorButton" name="colorButton" th:value="${colorButton}" required>
+            </div>
+            <div>
+                <label for="menu">Menu:</label>
+                <textarea id="menu" name="menu" rows="4" required th:text="${menu}"></textarea>
+            </div>
+            <div>
+                <label for="password">Mot de passe administrateur:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Enregistrer</button>
+        </form>
+
+        <h1>Gestion de la carte</h1>
+
+        <h3>Carte existante</h3>
+        <div th:if="${card == 1}">
+            <div th:each="card : ${cardList}">
+                <form th:action="@{/config/modifyCard/{token}/{tokenCard}(token=${token}, tokenCard=${card.tokenCard})}" method="post">
+                    <div>
+                        <label for="Entree">Entrée</label>
+                        <input type="text" id="Entree" name="Entree" th:value="${card.entree}" required>
+                    </div>
+                    <div>
+                        <label for="Plats">Plats Principaux</label>
+                        <textarea id="Plats" name="Plats" rows="4" required th:text="${card.plats}"></textarea>
+                    </div>
+                    <div>
+                        <label for="Desserts">Desserts</label>
+                        <input type="text" id="Desserts" name="Desserts" th:value="${card.desserts}" required>
+                    </div>
+                    <input type="hidden" name="tokenCard" th:value="${card.tokenCard}" />
+                    <button type="submit">Modifier La Carte</button>
+                </form>
+            
+                <form th:action="@{/config/deleteCard/{token}/{tokenCard}(token=${token}, tokenCard=${card.tokenCard})}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Supprimer La Carte</button>
+                </form>
+            </div>
+        </div>
+        <div th:unless="${cardList != null && !#lists.isEmpty(cardList)}">
+            Aucune carte existante
+        </div>
+
+        <div class="container">
+            <h1>Ajouter un Nouveau Menu</h1>
+            <form th:action="@{/config/createMenu/{token}(token=${token})}" method="post">
+                <div class="form-group">
+                    <label for="nameMenu">Nom du Menu:</label>
+                    <input type="text" id="nameMenu" name="nameMenu" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="Entree">Entrée:</label>
+                    <input type="text" id="Entree" name="Entree" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="Plats">Plats Principaux:</label>
+                    <textarea id="Plats" name="Plats" class="form-control" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="Desserts">Desserts:</label>
+                    <input type="text" id="Desserts" name="Desserts" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Ajouter Menu</button>
+            </form>
+        </div>
+        <h3>Menu existant</h3>
+        <div th:if="${menu == 1}">
+            <div th:each="menu : ${menuList}">
+                <form th:action="@{/config/modifyMenu/{token}/{tokenMenu}(token=${token}, tokenMenu=${menu.tokenMenu})}" method="post">
+                    <div>
+                        <label for="menuName">Nom du Menu</label>
+                        <input type="text" id="menuName" name="menuName" th:value="${menu.nameMenu}" required>
+                    </div>
+                    <div>
+                        <label for="Entree">Entrée</label>
+                        <input type="text" id="Entree" name="Entree" th:value="${menu.entree}" required>
+                    </div>
+                    <div>
+                        <label for="Plats">Plats Principaux</label>
+                        <textarea id="Plats" name="Plats" rows="4" required th:text="${menu.plats}"></textarea>
+                    </div>
+                    <div>
+                        <label for="Desserts">Desserts</label>
+                        <input type="text" id="Desserts" name="Desserts" th:value="${menu.desserts}" required>
+                    </div>
+                    <input type="hidden" name="menuToken" th:value="${menu.tokenMenu}" />
+                    <button type="submit">Modifier Le Menu</button>
+                </form>
+     
+                <form th:action="@{/config/deleteMenu/{token}/{tokenMenu}(token=${token}, tokenMenu=${menu.tokenMenu})}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Supprimer Le Menu</button>
+                </form>
+            </div>
+        </div>
+        <div th:unless="${menuList != null && !#lists.isEmpty(menuList)}">
+            Aucun menu existant
+        </div>
+
+        <h3>Plats existants</h3>
+        <div th:if="${plats == 1}">
+            <div th:each="plat : ${platsList}">
+                <form th:action="@{/config/modifyPlat/{token}/{tokenPlat}(token=${token}, tokenPlat=${plat.tokenPlat})}" method="post" enctype="multipart/form-data">
+                    <div>
+                        <label for="platName">Nom du plat</label>
+                        <input type="text" id="platName" name="name" th:value="${plat.nom}" required>
+                    </div>
+                    <div>
+                        <label for="photo">Photo du plat</label>
+                        <input type="file" id="photo" name="photo" accept="image/*" required>
+                    </div>
+                    <div>
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="4" required th:text="${plat.description}"></textarea>
+                    </div>
+                    <div>
+                        <label for="prix">Prix (€)</label>
+                        <input type="number" step="0.01" id="prix" name="prix" th:value="${plat.prix}" required>
+                    </div>
+                    <div>
+                        <label for="allergenes">Allergènes (séparés par des virgules)</label>
+                        <input type="text" id="allergenes" name="allergenes" th:value="${plat.allergenes}" required>
+                    </div>
+                    <input type="hidden" name="tokenPlat" th:value="${plat.tokenPlat}" />
+                    <button type="submit">Modifier le Plat</button>
+                </form>
+         
+                <form th:action="@{/config/deletePlat/{token}/{tokenPlat}(token=${token}, tokenPlat=${plat.tokenPlat})}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Supprimer Le Plat</button>
+                </form>
+            </div>
+        </div>
+        <div th:unless="${platsList != null && !#lists.isEmpty(platsList)}">
+            Aucun plat existant
+        </div>
+
+        <div class="container">
+            <h1>Ajouter une Nouvelle Carte</h1>
+            <form th:action="@{/config/createCard/{token}(token=${token})}" method="post">
+                <div class="form-group">
+                    <label for="Entree">Entrée</label>
+                    <input type="text" id="Entree" name="Entree" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="Plats">Plats Principaux</label>
+                    <textarea id="Plats" name="Plats" class="form-control" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="Desserts">Desserts</label>
+                    <input type="text" id="Desserts" name="Desserts" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="colonne">Ajouter une colonne</label>
+                    <input type="text" id="colonne" name="colonne" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Ajouter Carte</button>
+            </form>
+        </div>
+
+        <div class="container">
+            <h1>Ajouter un nouveau Plat</h1>
+            <form th:action="@{/config/createPlat/{token}(token=${token})}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="nom">Nom du plat:</label>
+                    <input type="text" id="nom" name="nom" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="photo">Photo du plat:</label>
+                    <input type="file" id="photo" name="photo" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="prix">Prix (€):</label>
+                    <input type="number" step="0.01" id="prix" name="prix" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="allergenes">Allergènes (séparés par des virgules):</label>
+                    <input type="text" id="allergenes" name="allergenes" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Ajouter Plat</button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
